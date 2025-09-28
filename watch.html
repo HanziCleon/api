@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DongTube - Watch Anime</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D1117;
+            --secondary: #161B22;
+            --surface: #21262D;
+            --card: #30363D;
+            --accent: #238636;
+            --accent-hover: #2EA043;
+            --purple: #8B5CF6;
+            --purple-hover: #A78BFA;
+            --blue: #58A6FF;
+            --text-primary: #F0F6FC;
+            --text-secondary: #8B949E;
+            --text-muted: #656D76;
+            --border: #30363D;
+            --border-muted: #21262D;
+            --success: #238636;
+            --warning: #D29922;
+            --error: #DA3633;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 25% 25%, hsla(256, 70%, 70%, 0.15) 0px, transparent 25%),
+                radial-gradient(at 75% 75%, hsla(339, 70%, 70%, 0.15) 0px, transparent 25%);
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--purple-hover) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card);
+            border-color: var(--purple);
+        }
+
+        .video-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .video-player-wrapper {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-player-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .video-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .video-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: white;
+            text-align: center;
+            gap: 16px;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 12px;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .error-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .error-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            max-width: 350px;
+            line-height: 1.5;
+        }
+
+        .video-info {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 20px;
+        }
+
+        .video-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            line-height: 1.2;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--purple) 50%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .video-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .meta-item:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .meta-icon {
+            font-size: 1rem;
+        }
+
+        .meta-text {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .episodes-section {
+            margin-top: 40px;
+            padding-top: 24px;
+            position: relative;
+        }
+
+        .episodes-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 1px;
+        }
+
+        .episodes-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .episodes-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .episodes-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .episode-btn {
+            padding: 16px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .episode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .episode-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .episode-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        .episode-btn.active {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--purple-hover) 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .episode-btn.active::before {
+            transform: scaleX(1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 280px;
+            max-width: 360px;
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            font-size: 13px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--error); }
+        .toast.info { border-left: 3px solid var(--purple); }
+
+        .platform-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        @media (max-width: 768px) {
+            .video-container {
+                padding: 16px;
+            }
+
+            .video-player-wrapper {
+                padding: 16px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+
+            .video-info {
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            .video-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .episodes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .episode-btn {
+                padding: 12px 8px;
+                font-size: 12px;
+            }
+
+            .nav-container {
+                padding: 10px 16px;
+            }
+
+            .toast-container {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+            }
+
+            .toast {
+                min-width: unset;
+                max-width: unset;
+                margin: 0 0 8px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-title {
+                font-size: 1.2rem;
+            }
+
+            .meta-item {
+                font-size: 12px;
+                padding: 10px 12px;
+            }
+
+            .episodes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .episode-btn {
+                padding: 10px 6px;
+                font-size: 11px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+        <div style="color: var(--text-secondary); font-size: 1rem; font-weight: 500;">Memuat video...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo" onclick="goHome()">DongTube</div>
+            <div style="flex: 1;"></div>
+            <button class="btn btn-secondary" onclick="goHome()">
+                <span>🏠</span>
+                <span>Beranda</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Main Content -->
+    <div class="video-container">
+        <div class="video-player-wrapper">
+            <div class="video-player" id="videoPlayer">
+                <div class="video-error">
+                    <div class="error-icon">📺</div>
+                    <h3 class="error-title">Memuat Player...</h3>
+                    <p class="error-description">Mohon tunggu sebentar</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="video-info">
+            <div class="video-header">
+                <div style="flex: 1;">
+                    <h1 class="video-title" id="videoTitle">Loading...</h1>
+                    <div class="video-meta" id="videoMeta">
+                        <div class="meta-item">
+                            <span class="meta-icon">📅</span>
+                            <span class="meta-text">Memuat informasi...</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="goHome()">
+                    <span>←</span>
+                    <span>Kembali</span>
+                </button>
+            </div>
+            
+            <div class="episodes-section" id="episodesSection" style="display: none;">
+                <div class="episodes-header">
+                    <h3 class="episodes-title">Daftar Episode</h3>
+                    <p class="episodes-subtitle">Pilih episode yang ingin ditonton</p>
+                </div>
+                <div class="episodes-grid" id="episodesGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            JSONBIN_API_KEY: '$2a$10$fWbkVbZoaPpLM5NW4F1/qeSDVy0LyzIR4IbYl2DVmc.8C8LyBfxFO',
+            JSONBIN_BIN_ID: '68d5f5e6d0ea881f408b3f21'
+        };
+
+        // Global State
+        let currentAnime = null;
+        let currentEpisode = null;
+        let allAnimeData = [];
+
+        // Session Management
+        class SessionManager {
+            static sessionData = null;
+
+            static getSession() {
+                try {
+                    if (typeof(Storage) !== "undefined") {
+                        const stored = localStorage.getItem('dongtube_session');
+                        if (stored) {
+                            const data = JSON.parse(stored);
+                            if (Date.now() <= data.expires) {
+                                this.sessionData = data;
+                                return data.user;
+                            }
+                        }
+                    }
+                } catch (e) {}
+
+                if (this.sessionData && Date.now() <= this.sessionData.expires) {
+                    return this.sessionData.user;
+                }
+                
+                return null;
+            }
+        }
+
+        // API Service
+        class ApiService {
+            constructor() {
+                this.baseUrl = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`;
+                this.apiKey = CONFIG.JSONBIN_API_KEY;
+            }
+
+            async getData() {
+                try {
+                    const response = await fetch(`${this.baseUrl}/latest`, {
+                        headers: { "X-Master-Key": this.apiKey }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    return data.record || { animes: [] };
+                } catch (error) {
+                    console.error('Error getting data:', error);
+                    showToast('Gagal memuat data dari server', 'error');
+                    return { animes: [] };
+                }
+            }
+        }
+
+        const apiService = new ApiService();
+
+        // Video Platform Detection and Embedding
+        class VideoPlayerManager {
+            static detectPlatform(url) {
+                const platforms = {
+                    youtube: /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+                    dailymotion: /dailymotion\.com\/video\/([^_?]+)/,
+                    vimeo: /vimeo\.com\/(\d+)/,
+                    twitch: /twitch\.tv\/videos\/(\d+)/,
+                    facebook: /facebook\.com.*\/videos\/(\d+)/,
+                    streamable: /streamable\.com\/([a-zA-Z0-9]+)/,
+                    mp4: /\.(mp4|webm|ogg)(\?.*)?$/i,
+                    m3u8: /\.m3u8(\?.*)?$/i,
+                    googleDrive: /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+                    dropbox: /dropbox\.com.*\/s\/([a-zA-Z0-9]+)/,
+                    mega: /mega\.nz.*\/([a-zA-Z0-9_-]+)/
+                };
+
+                for (const [platform, regex] of Object.entries(platforms)) {
+                    const match = url.match(regex);
+                    if (match) {
+                        return { platform, id: match[1] };
+                    }
+                }
+
+                return { platform: 'direct', id: url };
+            }
+
+            static createPlayer(url, playerElement) {
+                const { platform, id } = this.detectPlatform(url);
+                let embedUrl = '';
+                let platformName = '';
+
+                switch (platform) {
+                    case 'youtube':
+                        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+                        platformName = 'YouTube';
+                        break;
+                    
+                    case 'dailymotion':
+                        embedUrl = `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
+                        platformName = 'Dailymotion';
+                        break;
+                    
+                    case 'vimeo':
+                        embedUrl = `https://player.vimeo.com/video/${id}?autoplay=1&title=0&byline=0&portrait=0`;
+                        platformName = 'Vimeo';
+                        break;
+                    
+                    case 'twitch':
+                        embedUrl = `https://player.twitch.tv/?video=${id}&parent=${window.location.hostname}&autoplay=true`;
+                        platformName = 'Twitch';
+                        break;
+                    
+                    case 'facebook':
+                        embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&autoplay=true`;
+                        platformName = 'Facebook';
+                        break;
+                    
+                    case 'streamable':
+                        embedUrl = `https://streamable.com/e/${id}?autoplay=1`;
+                        platformName = 'Streamable';
+                        break;
+                    
+                    case 'googleDrive':
+                        embedUrl = `https://drive.google.com/file/d/${id}/preview`;
+                        platformName = 'Google Drive';
+                        break;
+                    
+                    case 'dropbox':
+                        embedUrl = url.replace('dropbox.com', 'dropbox.com').replace('?dl=0', '') + '?raw=1';
+                        platformName = 'Dropbox';
+                        this.createDirectVideoPlayer(embedUrl, playerElement, platformName);
+                        return;
+                    
+                    case 'mp4':
+                    case 'm3u8':
+                        platformName = 'Direct Video';
+                        this.createDirectVideoPlayer(url, playerElement, platformName);
+                        return;
+                    
+                    case 'direct':
+                    default:
+                        // Try iframe first, fallback to direct video
+                        platformName = 'External';
+                        this.createIframePlayer(url, playerElement, platformName);
+                        return;
+                }
+
+                this.createIframePlayer(embedUrl, playerElement, platformName);
+            }
+
+            static createIframePlayer(embedUrl, playerElement, platformName) {
+                playerElement.innerHTML = `
+                    <iframe 
+                        src="${embedUrl}" 
+                        allowfullscreen
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    <div class="platform-badge">${platformName}</div>
+                `;
+            }
+
+            static createDirectVideoPlayer(videoUrl, playerElement, platformName) {
+                playerElement.innerHTML = `
+                    <video 
+                        controls 
+                        autoplay 
+                        preload="metadata"
+                        controlsList="nodownload">
+                        <source src="${videoUrl}" type="video/mp4">
+                        <source src="${videoUrl}" type="video/webm">
+                        <p>Browser Anda tidak mendukung video player ini.</p>
+                    </video>
+                    <div class="platform-badge">${platformName}</div>
+                `;
+            }
+        }
+
+        // Navigation Functions
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        // Toast System
+        function showToast(message, type = 'info', title = null) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const icons = {
+                success: `<svg style="width: 16px; height: 16px; color: var(--success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>`,
+                error: `<svg style="width: 16px; height: 16px; color: var(--error);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>`,
+                info: `<svg style="width: 16px; height: 16px; color: var(--purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>`
+            };
+
+            const titles = {
+                success: title || 'Berhasil',
+                error: title || 'Error',
+                info: title || 'Info'
+            };
+
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                ${icons[type]}
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 12px; color: var(--text-primary); margin-bottom: 2px;">${titles[type]}</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;">${message}</div>
+                </div>
+                <svg style="width: 14px; height: 14px; color: var(--text-muted); cursor: pointer;" onclick="this.parentElement.remove()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(150%)';
+                setTimeout(() => {
+                    if (container.contains(toast)) {
+                        container.removeChild(toast);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Video Player Functions
+        function loadVideoPlayer(anime) {
+            const titleElement = document.getElementById('videoTitle');
+            const metaElement = document.getElementById('videoMeta');
+            const episodesSection = document.getElementById('episodesSection');
+            const episodesGrid = document.getElementById('episodesGrid');
+            
+            titleElement.textContent = anime.title;
+            metaElement.innerHTML = `
+                <div class="meta-item">
+                    <span class="meta-icon">📅</span>
+                    <span class="meta-text">Tahun: ${anime.year || 'N/A'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">⭐</span>
+                    <span class="meta-text">Rating: ${anime.rating ? anime.rating + '/10' : 'N/A'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">🎭</span>
+                    <span class="meta-text">Genre: ${anime.genre || 'N/A'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">📊</span>
+                    <span class="meta-text">Status: ${anime.status}</span>
+                </div>
+            `;
+            
+            if (anime.episodes && anime.episodes.length > 0) {
+                episodesGrid.innerHTML = anime.episodes.map(episode => `
+                    <button class="episode-btn" onclick="playEpisode(${JSON.stringify(episode).replace(/"/g, '&quot;')}, this)">
+                        Episode ${episode.num}
+                    </button>
+                `).join('');
+                
+                episodesSection.style.display = 'block';
+                playEpisode(anime.episodes[0]);
+                showToast(`${anime.title} siap ditonton`, 'success');
+            } else {
+                episodesSection.style.display = 'none';
+                showVideoError('Belum Ada Episode', 'Episode untuk anime ini belum tersedia');
+                showToast('Episode belum tersedia', 'error');
+            }
+        }
+
+        function playEpisode(episode, buttonElement = null) {
+            if (!episode) return;
+            
+            currentEpisode = episode;
+            
+            document.querySelectorAll('.episode-btn').forEach(btn => btn.classList.remove('active'));
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            } else {
+                const firstBtn = document.querySelector('.episode-btn');
+                if (firstBtn) firstBtn.classList.add('active');
+            }
+
+            showVideoLoading();
+            
+            setTimeout(() => {
+                if (!episode.src) {
+                    showVideoError('Link Video Tidak Valid', 'URL episode tidak tersedia atau tidak valid');
+                    return;
+                }
+
+                try {
+                    const playerElement = document.getElementById('videoPlayer');
+                    VideoPlayerManager.createPlayer(episode.src, playerElement);
+                    document.getElementById('videoTitle').textContent = `${currentAnime.title} - ${episode.title}`;
+                    showToast(`Memutar ${episode.title}`, 'success');
+                } catch (error) {
+                    console.error('Error playing episode:', error);
+                    showVideoError('Gagal Memuat Video', 'Terjadi kesalahan saat memuat video');
+                    showToast('Gagal memuat video episode', 'error');
+                }
+            }, 800);
+        }
+
+        function showVideoLoading() {
+            const playerElement = document.getElementById('videoPlayer');
+            playerElement.innerHTML = `
+                <div class="video-error">
+                    <div class="spinner"></div>
+                    <h3 class="error-title">Memuat Episode...</h3>
+                    <p class="error-description">Mohon tunggu sebentar</p>
+                </div>
+            `;
+        }
+
+        function showVideoError(title, description) {
+            const playerElement = document.getElementById('videoPlayer');
+            playerElement.innerHTML = `
+                <div class="video-error">
+                    <div class="error-icon">⚠️</div>
+                    <h3 class="error-title">${title}</h3>
+                    <p class="error-description">${description}</p>
+                    <button class="btn btn-primary" onclick="goHome()">Kembali ke Beranda</button>
+                </div>
+            `;
+        }
+
+        // Get anime from URL parameter
+        function getAnimeIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get('id'));
+        }
+
+        // Initialize watch page
+        async function initWatchPage() {
+            const animeId = getAnimeIdFromUrl();
+            
+            if (!animeId) {
+                showVideoError('Anime Tidak Ditemukan', 'ID anime tidak valid dalam URL');
+                showToast('Parameter anime tidak valid', 'error');
+                return;
+            }
+
+            // Check if user is logged in
+            const user = SessionManager.getSession();
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const data = await apiService.getData();
+                allAnimeData = data.animes || [];
+                
+                const anime = allAnimeData.find(a => a.id === animeId);
+                if (!anime) {
+                    showVideoError('Anime Tidak Ditemukan', 'Anime dengan ID tersebut tidak ditemukan');
+                    showToast('Anime tidak ditemukan', 'error');
+                    return;
+                }
+                
+                currentAnime = anime;
+                loadVideoPlayer(anime);
+                
+            } catch (error) {
+                console.error('Error loading anime:', error);
+                showVideoError('Gagal Memuat Anime', 'Terjadi kesalahan saat memuat data anime');
+                showToast('Gagal memuat data anime', 'error');
+            } finally {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (currentAnime && currentAnime.episodes) {
+                const episodes = currentAnime.episodes;
+                const currentIndex = episodes.findIndex(ep => ep.num === currentEpisode?.num);
+                
+                if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                    e.preventDefault();
+                    const prevButton = document.querySelectorAll('.episode-btn')[currentIndex - 1];
+                    playEpisode(episodes[currentIndex - 1], prevButton);
+                    showToast(`Episode ${episodes[currentIndex - 1].num}`, 'info', 'Episode Sebelumnya');
+                } else if (e.key === 'ArrowRight' && currentIndex < episodes.length - 1) {
+                    e.preventDefault();
+                    const nextButton = document.querySelectorAll('.episode-btn')[currentIndex + 1];
+                    playEpisode(episodes[currentIndex + 1], nextButton);
+                    showToast(`Episode ${episodes[currentIndex + 1].num}`, 'info', 'Episode Selanjutnya');
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    goHome();
+                }
+            }
+        });
+
+        // Start application
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initWatchPage);
+        } else {
+            initWatchPage();
+        }
+
+        // Expose functions globally
+        window.goHome = goHome;
+        window.playEpisode = playEpisode;
+    </script>
+</body>
+</html>
+            
