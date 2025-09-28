@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DongTube - Watch Anime</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary: #0a0d14;
+            --secondary: #111827;
+            --surface: #1f2937;
+            --card: #374151;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --purple: #8b5cf6;
+            --purple-hover: #7c3aed;
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+            --orange: #f59e0b;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --border: #374151;
+            --border-muted: #1f2937;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --glow: 0 0 20px rgba(139, 92, 246, 0.3);
+            --glow-strong: 0 0 40px rgba(139, 92, 246, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 25% 25%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 75% 75%, rgba(59, 130, 246, 0.06) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--purple), var(--blue));
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, var(--purple-hover), var(--cyan));
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.6s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .loading-spinner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--purple);
+            border-right: 3px solid var(--blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 2px solid transparent;
+            border-bottom: 2px solid var(--cyan);
+            border-left: 2px solid var(--pink);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 13, 20, 0.95);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .back-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--card);
+            border-color: var(--purple);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 50%, var(--cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.2));
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--purple);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            border-color: var(--cyan);
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .video-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        .video-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--blue), var(--cyan));
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-container:hover .video-controls {
+            opacity: 1;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            transform: scale(1.1);
+        }
+
+        .video-info {
+            padding: 32px;
+        }
+
+        .anime-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--purple) 50%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .episode-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .anime-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border-muted);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .meta-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--orange) 0%, #f97316 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .status-complete {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+        }
+
+        .anime-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .episode-nav {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .episode-nav h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .episode-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: var(--surface);
+            border-radius: 12px;
+        }
+
+        .nav-btn {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:disabled {
+            background: var(--border-muted);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .nav-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .episode-info {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .episode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .episode-btn {
+            padding: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .episode-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .episode-btn:hover::before {
+            opacity: 0.1;
+        }
+
+        .episode-btn:hover {
+            border-color: var(--purple);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .episode-btn.active {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: var(--glow);
+        }
+
+        .episode-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .comments-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        .comments-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), var(--blue), transparent);
+        }
+
+        .comments-header {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
+        }
+
+        .comments-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comments-count {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .comment-form {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .reply-indicator {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: var(--purple);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reply-indicator.active {
+            display: flex;
+        }
+
+        .cancel-reply {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comment-input-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 16px 18px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.5;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--purple);
+            background: var(--primary);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1), var(--glow);
+            transform: translateY(-1px);
+        }
+
+        .comment-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .char-count {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .char-count.warning {
+            color: var(--warning);
+        }
+
+        .char-count.error {
+            color: var(--error);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl), var(--glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card);
+            border-color: var(--purple);
+            transform: translateY(-1px);
+        }
+
+        .comments-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 16px 0;
+        }
+
+        .comment {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border-muted);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .comment.reply {
+            margin-left: 40px;
+            border-left: 3px solid var(--purple);
+            padding-left: 20px;
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .comment:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .comment:hover .comment-avatar {
+            border-color: var(--purple);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .comment-time {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .comment-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-left: 52px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .comment-actions-btn {
+            display: flex;
+            gap: 16px;
+            margin-left: 52px;
+            margin-top: 12px;
+        }
+
+        .comment-action {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .comment-action:hover {
+            color: var(--purple);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .comment-action.liked {
+            color: var(--error);
+        }
+
+        .empty-comments {
+            padding: 60px 28px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-comments-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 400px;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { 
+            border-left: 4px solid var(--success); 
+            box-shadow: var(--shadow-xl), 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+        .toast.error { 
+            border-left: 4px solid var(--error); 
+            box-shadow: var(--shadow-xl), 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+        .toast.info { 
+            border-left: 4px solid var(--purple); 
+            box-shadow: var(--shadow-xl), 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 24px 20px;
+            }
+
+            .sidebar {
+                position: static;
+                order: 2;
+            }
+
+            .comments-section {
+                margin-top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 12px 16px;
+                gap: 16px;
+            }
+
+            .main-container {
+                padding: 20px 16px;
+                gap: 20px;
+            }
+
+            .video-info {
+                padding: 24px 20px;
+            }
+
+            .anime-title {
+                font-size: 1.6rem;
+            }
+
+            .episode-title {
+                font-size: 1.1rem;
+            }
+
+            .anime-meta {
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .episode-nav {
+                padding: 16px;
+            }
+
+            .episode-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 10px;
+            }
+
+            .episode-btn {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            .comments-header, .comment-form {
+                padding: 20px 20px;
+            }
+
+            .comment {
+                padding: 16px 20px;
+            }
+
+            .comment-content {
+                margin-left: 42px;
+            }
+
+            .comment-actions-btn {
+                margin-left: 42px;
+            }
+
+            .comment-avatar {
+                width: 36px;
+                height: 36px;
+            }
+
+            .comments-list {
+                max-height: 500px;
+            }
+
+            .control-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+
+            .toast-container {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+            }
+
+            .toast {
+                min-width: unset;
+                max-width: unset;
+                margin: 0 0 12px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 10px 12px;
+                gap: 12px;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .back-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .main-container {
+                padding: 16px 12px;
+                gap: 16px;
+            }
+
+            .video-info {
+                padding: 20px 16px;
+            }
+
+            .anime-title {
+                font-size: 1.4rem;
+            }
+
+            .episode-title {
+                font-size: 1rem;
+            }
+
+            .anime-meta {
+                padding: 12px;
+                gap: 12px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .episode-nav {
+                padding: 12px;
+            }
+
+            .episode-navigation {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .episode-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 8px;
+            }
+
+            .episode-btn {
+                padding: 8px 6px;
+                font-size: 11px;
+            }
+
+            .comments-header, .comment-form {
+                padding: 16px;
+            }
+
+            .comments-title {
+                font-size: 1.2rem;
+            }
+
+            .comment-textarea {
+                min-height: 80px;
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .comment {
+                padding: 12px 16px;
+            }
+
+            .comment-content {
+                margin-left: 36px;
+                font-size: 13px;
+            }
+
+            .comment-actions-btn {
+                margin-left: 36px;
+            }
+
+            .comment-avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .empty-comments {
+                padding: 40px 16px;
+            }
+
+            .control-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <div style="color: var(--text-secondary); font-size: 1.1rem; font-weight: 500; margin-top: 8px;">Memuat video...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="back-btn">
+                <span>←</span>
+                <span>Kembali</span>
+            </a>
+            
+            <div class="logo" onclick="window.location.href='index.html'">DongTube</div>
+            
+            <div class="user-info">
+                <img id="userAvatar" class="user-avatar" alt="User">
+                <span id="userName" style="color: var(--text-secondary); font-weight: 600; font-size: 14px;"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Main Container -->
+    <div class="main-container" id="mainContainer" style="display: none;">
+        <!-- Video Section -->
+        <div class="video-section fade-in">
+            <div class="video-container" id="videoContainer">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: var(--surface); color: var(--text-muted);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 16px; opacity: 0.5;">📺</div>
+                        <div>Memuat video...</div>
+                    </div>
+                </div>
+                <!-- Video Controls -->
+                <div class="video-controls">
+                    <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                        ⛶
+                    </button>
+                </div>
+            </div>
+            
+            <div class="video-info">
+                <h1 class="anime-title" id="animeTitle">Memuat...</h1>
+                <h2 class="episode-title" id="episodeTitle">Memuat episode...</h2>
+                
+                <div class="anime-meta" id="animeMeta">
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span class="meta-value" id="animeYear">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>⭐</span>
+                        <span class="meta-value" id="animeRating">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📺</span>
+                        <span class="meta-value" id="totalEpisodes">- Episode</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>🎭</span>
+                        <span class="meta-value" id="animeGenre">-</span>
+                    </div>
+                    <div class="status-badge" id="statusBadge">Loading</div>
+                </div>
+                
+                <div class="anime-description" id="animeDescription">
+                    Memuat deskripsi anime...
+                </div>
+                
+                <div class="episode-nav">
+                    <h3>📺 Daftar Episode</h3>
+                    
+                    <!-- Episode Navigation -->
+                    <div class="episode-navigation">
+                        <button class="nav-btn" id="prevEpisodeBtn" onclick="previousEpisode()">
+                            <span>←</span>
+                            <span>Episode Sebelumnya</span>
+                        </button>
+                        
+                        <div class="episode-info">
+                            <span id="currentEpisodeInfo">Episode 1 dari 12</span>
+                        </div>
+                        
+                        <button class="nav-btn" id="nextEpisodeBtn" onclick="nextEpisode()">
+                            <span>Episode Selanjutnya</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+                    
+                    <div class="episode-grid" id="episodeGrid">
+                        <!-- Episodes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar fade-in">
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <div class="comments-header">
+                    <h3 class="comments-title">
+                        <span>💬</span>
+                        <span>Komentar</span>
+                    </h3>
+                    <div class="comments-count" id="commentsCount">0 komentar</div>
+                </div>
+                
+                <div class="comment-form">
+                    <div class="reply-indicator" id="replyIndicator">
+                        <span id="replyText">Membalas @username</span>
+                        <button class="cancel-reply" onclick="cancelReply()">×</button>
+                    </div>
+                    
+                    <div class="comment-input-container">
+                        <textarea 
+                            class="comment-textarea" 
+                            id="commentInput"
+                            placeholder="Tulis komentar Anda di sini..." 
+                            maxlength="500"
+                            rows="4"></textarea>
+                    </div>
+                    <div class="comment-actions">
+                        <div class="char-count" id="charCount">0/500</div>
+                        <button class="btn btn-primary" id="submitComment" onclick="submitComment()">
+                            <span>💬</span>
+                            <span>Kirim</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="comments-list" id="commentsList">
+                    <div class="empty-comments">
+                        <div class="empty-comments-icon">💬</div>
+                        <h4>Belum ada komentar</h4>
+                        <p>Jadilah yang pertama berkomentar!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration (Fixed syntax error)
+        const CONFIG = {
+            // Main anime data API
+            JSONBIN_API_KEY: '$2a$10$fWbkVbZoaPpLM5NW4F1/qeSDVy0LyzIR4IbYl2DVmc.8C8LyBfxFO',
+            JSONBIN_BIN_ID: '68d5f5e6d0ea881f408b3f21',
+            
+            // Comments API (separate)
+            COMMENTS_API_KEY: '$2a$10$rkxBN/5kMJODzn0sDAfPSurXrLm7eRlM9i0ipOYDc8OiWFxvUfl3q',
+            COMMENTS_BIN_ID: '68d94b0143b1c97be953170f',
+            
+            ADMIN_EMAILS: ['hanzgantengno1@gmail.com']
+        };
+
+        // Global State
+        let currentUser = null;
+        let currentAnime = null;
+        let currentEpisode = null;
+        let currentEpisodeIndex = 0;
+        let allComments = [];
+        let replyingTo = null;
+
+        // Session Management
+        class SessionManager {
+            static sessionData = null;
+
+            static getSession() {
+                try {
+                    if (typeof(Storage) !== "undefined") {
+                        const stored = localStorage.getItem('dongtube_session');
+                        if (stored) {
+                            const data = JSON.parse(stored);
+                            if (Date.now() <= data.expires) {
+                                this.sessionData = data;
+                                return data.user;
+                            } else {
+                                this.clearSession();
+                            }
+                        }
+                    }
+                } catch (e) {}
+
+                if (this.sessionData && Date.now() <= this.sessionData.expires) {
+                    return this.sessionData.user;
+                }
+                
+                return null;
+            }
+
+            static clearSession() {
+                this.sessionData = null;
+                try {
+                    if (typeof(Storage) !== "undefined") {
+                        localStorage.removeItem('dongtube_session');
+                    }
+                } catch (e) {}
+            }
+        }
+
+        // API Services
+        class AnimeApiService {
+            constructor() {
+                this.baseUrl = `https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`;
+                this.apiKey = CONFIG.JSONBIN_API_KEY;
+            }
+
+            async getData() {
+                try {
+                    const response = await fetch(`${this.baseUrl}/latest`, {
+                        headers: { "X-Master-Key": this.apiKey }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    return data.record || { animes: [] };
+                } catch (error) {
+                    console.error('Error getting anime data:', error);
+                    throw error;
+                }
+            }
+        }
+
+        class CommentsApiService {
+            constructor() {
+                this.baseUrl = `https://api.jsonbin.io/v3/b/${CONFIG.COMMENTS_BIN_ID}`;
+                this.apiKey = CONFIG.COMMENTS_API_KEY;
+            }
+
+            async getComments() {
+                try {
+                    const response = await fetch(`${this.baseUrl}/latest`, {
+                        headers: { "X-Master-Key": this.apiKey }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    return data.record || { comments: [] };
+                } catch (error) {
+                    console.error('Error getting comments:', error);
+                    return { comments: [] };
+                }
+            }
+
+            async updateComments(commentsData) {
+                try {
+                    const response = await fetch(this.baseUrl, {
+                        method: 'PUT',
+                        headers: { 
+                            "X-Master-Key": this.apiKey, 
+                            "Content-Type": "application/json" 
+                        },
+                        body: JSON.stringify(commentsData)
+                    });
+                    
+                    if (!response.ok) throw new Error('Failed to update comments');
+                    return true;
+                } catch (error) {
+                    console.error('Error updating comments:', error);
+                    return false;
+                }
+            }
+        }
+
+        const animeApi = new AnimeApiService();
+        const commentsApi = new CommentsApiService();
+
+        // Toast System
+        function showToast(message, type = 'info', title = null) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const icons = {
+                success: `<svg style="width: 18px; height: 18px; color: var(--success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>`,
+                error: `<svg style="width: 18px; height: 18px; color: var(--error);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>`,
+                info: `<svg style="width: 18px; height: 18px; color: var(--purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>`
+            };
+
+            const titles = {
+                success: title || 'Berhasil',
+                error: title || 'Error',
+                info: title || 'Info'
+            };
+
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                ${icons[type]}
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 3px;">${titles[type]}</div>
+                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.4;">${message}</div>
+                </div>
+                <svg style="width: 16px; height: 16px; color: var(--text-muted); cursor: pointer;" onclick="this.parentElement.remove()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(150%)';
+                setTimeout(() => {
+                    if (container.contains(toast)) {
+                        container.removeChild(toast);
+                    }
+                }, 300);
+            }, 4500);
+        }
+
+        // URL and Navigation Functions
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                id: parseInt(urlParams.get('id')),
+                episode: parseInt(urlParams.get('episode')) || 1
+            };
+        }
+
+        function updateUrl(animeId, episodeNum) {
+            const newUrl = `${window.location.pathname}?id=${animeId}&episode=${episodeNum}`;
+            window.history.replaceState({ animeId, episode: episodeNum }, '', newUrl);
+        }
+
+        // Anime Functions
+        async function loadAnime() {
+            try {
+                const { id, episode } = getUrlParams();
+                
+                if (!id) {
+                    showToast('ID anime tidak ditemukan', 'error');
+                    setTimeout(() => window.location.href = 'index.html', 2000);
+                    return;
+                }
+
+                const data = await animeApi.getData();
+                currentAnime = data.animes.find(anime => anime.id === id);
+                
+                if (!currentAnime) {
+                    showToast('Anime tidak ditemukan', 'error');
+                    setTimeout(() => window.location.href = 'index.html', 2000);
+                    return;
+                }
+
+                currentEpisodeIndex = Math.max(0, Math.min(episode - 1, (currentAnime.episodes?.length || 1) - 1));
+                currentEpisode = currentAnime.episodes?.[currentEpisodeIndex];
+                
+                if (!currentEpisode) {
+                    showToast('Episode tidak ditemukan', 'error');
+                    return;
+                }
+
+                renderAnimeInfo();
+                renderEpisodeList();
+                updateEpisodeNavigation();
+                loadVideo();
+                await loadComments();
+                
+            } catch (error) {
+                console.error('Error loading anime:', error);
+                showToast('Gagal memuat anime', 'error');
+                setTimeout(() => window.location.href = 'index.html', 2000);
+            }
+        }
+
+        function renderAnimeInfo() {
+            document.getElementById('animeTitle').textContent = currentAnime.title;
+            document.getElementById('episodeTitle').textContent = `Episode ${currentEpisodeIndex + 1} - ${currentEpisode.title}`;
+            document.getElementById('animeYear').textContent = currentAnime.year || 'N/A';
+            document.getElementById('animeRating').textContent = `${currentAnime.rating || 'N/A'}/10`;
+            document.getElementById('totalEpisodes').textContent = `${currentAnime.episodes?.length || 0} Episode`;
+            document.getElementById('animeGenre').textContent = currentAnime.genre || 'N/A';
+            document.getElementById('animeDescription').textContent = currentAnime.description || 'Deskripsi tidak tersedia.';
+            
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = currentAnime.status;
+            statusBadge.className = `status-badge ${currentAnime.status === 'Complete' ? 'status-complete' : ''}`;
+            
+            // Update page title
+            document.title = `${currentAnime.title} - Episode ${currentEpisodeIndex + 1} | DongTube`;
+        }
+
+        function renderEpisodeList() {
+            const episodeGrid = document.getElementById('episodeGrid');
+            
+            if (!currentAnime.episodes || currentAnime.episodes.length === 0) {
+                episodeGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Tidak ada episode tersedia</div>';
+                return;
+            }
+            
+            episodeGrid.innerHTML = currentAnime.episodes.map((episode, index) => `
+                <a href="#" class="episode-btn ${index === currentEpisodeIndex ? 'active' : ''}" 
+                   onclick="switchEpisode(${index}); return false;">
+                    <span>Ep ${index + 1}</span>
+                </a>
+            `).join('');
+        }
+
+        function updateEpisodeNavigation() {
+            const prevBtn = document.getElementById('prevEpisodeBtn');
+            const nextBtn = document.getElementById('nextEpisodeBtn');
+            const episodeInfo = document.getElementById('currentEpisodeInfo');
+            
+            const totalEpisodes = currentAnime.episodes?.length || 0;
+            const currentEp = currentEpisodeIndex + 1;
+            
+            episodeInfo.textContent = `Episode ${currentEp} dari ${totalEpisodes}`;
+            
+            prevBtn.disabled = currentEpisodeIndex <= 0;
+            nextBtn.disabled = currentEpisodeIndex >= totalEpisodes - 1;
+        }
+
+        function loadVideo() {
+            const videoContainer = document.getElementById('videoContainer');
+            
+            if (!currentEpisode || !currentEpisode.src) {
+                videoContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: var(--surface); color: var(--text-muted);">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 16px; opacity: 0.5;">❌</div>
+                            <div>Video tidak tersedia</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Extract YouTube video ID
+            const videoId = extractYouTubeId(currentEpisode.src);
+            
+            let videoHtml = '';
+            
+            if (videoId) {
+                videoHtml = `
+                    <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                    </iframe>
+                `;
+            } else {
+                // Fallback for other video sources
+                videoHtml = `
+                    <iframe src="${currentEpisode.src}" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                    </iframe>
+                `;
+            }
+            
+            videoContainer.innerHTML = videoHtml + `
+                <div class="video-controls">
+                    <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                        ⛶
+                    </button>
+                </div>
+            `;
+        }
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function switchEpisode(episodeIndex) {
+            if (episodeIndex < 0 || episodeIndex >= currentAnime.episodes.length) return;
+            
+            currentEpisodeIndex = episodeIndex;
+            currentEpisode = currentAnime.episodes[episodeIndex];
+            
+            updateUrl(currentAnime.id, episodeIndex + 1);
+            renderAnimeInfo();
+            renderEpisodeList();
+            updateEpisodeNavigation();
+            loadVideo();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            showToast(`Beralih ke Episode ${episodeIndex + 1}`, 'success');
+        }
+
+        function previousEpisode() {
+            if (currentEpisodeIndex > 0) {
+                switchEpisode(currentEpisodeIndex - 1);
+            }
+        }
+
+        function nextEpisode() {
+            if (currentEpisodeIndex < (currentAnime.episodes?.length || 0) - 1) {
+                switchEpisode(currentEpisodeIndex + 1);
+            }
+        }
+
+        // Comments Functions
+        async function loadComments() {
+            try {
+                const data = await commentsApi.getComments();
+                allComments = data.comments || [];
+                
+                // Filter comments for current anime
+                const animeComments = allComments.filter(comment => 
+                    comment.animeId === currentAnime.id
+                );
+                
+                renderComments(animeComments);
+                updateCommentsCount(getTotalCommentsCount(animeComments));
+                
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                showToast('Gagal memuat komentar', 'error');
+            }
+        }
+
+        function getTotalCommentsCount(comments) {
+            let total = comments.length;
+            comments.forEach(comment => {
+                if (comment.replies) {
+                    total += comment.replies.length;
+                }
+            });
+            return total;
+        }
+
+        function renderComments(comments) {
+            const commentsList = document.getElementById('commentsList');
+            
+            if (!comments || comments.length === 0) {
+                commentsList.innerHTML = `
+                    <div class="empty-comments">
+                        <div class="empty-comments-icon">💬</div>
+                        <h4>Belum ada komentar</h4>
+                        <p>Jadilah yang pertama berkomentar!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Separate parent comments (no parentId) and sort by timestamp (newest first)
+            const parentComments = comments.filter(comment => !comment.parentId)
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            commentsList.innerHTML = parentComments.map(comment => {
+                const replies = comments.filter(reply => reply.parentId === comment.id)
+                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                
+                return renderCommentThread(comment, replies);
+            }).join('');
+        }
+
+        function renderCommentThread(comment, replies = []) {
+            const repliesHtml = replies.map(reply => `
+                <div class="comment reply">
+                    <div class="comment-header">
+                        <img class="comment-avatar" src="${reply.userAvatar}" alt="${reply.userName}">
+                        <span class="comment-author">${reply.userName}</span>
+                        <span class="comment-time">${formatTime(reply.timestamp)}</span>
+                    </div>
+                    <div class="comment-content">${escapeHtml(reply.content)}</div>
+                    <div class="comment-actions-btn">
+                        <button class="comment-action" onclick="likeComment('${reply.id}')">
+                            <span>❤️</span>
+                            <span>${reply.likes || 0}</span>
+                        </button>
+                        <button class="comment-action" onclick="replyToComment('${comment.id}', '${reply.userName}')">
+                            <span>💬</span>
+                            <span>Balas</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="comment">
+                    <div class="comment-header">
+                        <img class="comment-avatar" src="${comment.userAvatar}" alt="${comment.userName}">
+                        <span class="comment-author">${comment.userName}</span>
+                        <span class="comment-time">${formatTime(comment.timestamp)}</span>
+                    </div>
+                    <div class="comment-content">${escapeHtml(comment.content)}</div>
+                    <div class="comment-actions-btn">
+                        <button class="comment-action" onclick="likeComment('${comment.id}')">
+                            <span>❤️</span>
+                            <span>${comment.likes || 0}</span>
+                        </button>
+                        <button class="comment-action" onclick="replyToComment('${comment.id}', '${comment.userName}')">
+                            <span>💬</span>
+                            <span>Balas</span>
+                        </button>
+                    </div>
+                    ${repliesHtml}
+                </div>
+            `;
+        }
+
+        function updateCommentsCount(count) {
+            const commentsCount = document.getElementById('commentsCount');
+            commentsCount.textContent = `${count} komentar`;
+        }
+
+        function replyToComment(parentId, userName) {
+            replyingTo = { parentId, userName };
+            
+            const replyIndicator = document.getElementById('replyIndicator');
+            const replyText = document.getElementById('replyText');
+            const commentInput = document.getElementById('commentInput');
+            
+            replyText.textContent = `Membalas @${userName}`;
+            replyIndicator.classList.add('active');
+            
+            commentInput.focus();
+            commentInput.placeholder = `Balas ke @${userName}...`;
+        }
+
+        function cancelReply() {
+            replyingTo = null;
+            
+            const replyIndicator = document.getElementById('replyIndicator');
+            const commentInput = document.getElementById('commentInput');
+            
+            replyIndicator.classList.remove('active');
+            commentInput.placeholder = 'Tulis komentar Anda di sini...';
+        }
+
+        async function submitComment() {
+            const commentInput = document.getElementById('commentInput');
+            const submitBtn = document.getElementById('submitComment');
+            const content = commentInput.value.trim();
+            
+            if (!content) {
+                showToast('Komentar tidak boleh kosong', 'error');
+                return;
+            }
+            
+            if (content.length > 500) {
+                showToast('Komentar terlalu panjang (maksimal 500 karakter)', 'error');
+                return;
+            }
+            
+            if (!currentUser) {
+                showToast('Anda harus login untuk berkomentar', 'error');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳</span><span>Mengirim...</span>';
+            
+            try {
+                const newComment = {
+                    id: generateId(),
+                    animeId: currentAnime.id,
+                    episodeNum: currentEpisodeIndex + 1,
+                    content: content,
+                    userName: currentUser.name,
+                    userEmail: currentUser.email,
+                    userAvatar: currentUser.picture,
+                    timestamp: new Date().toISOString(),
+                    likes: 0,
+                    parentId: replyingTo ? replyingTo.parentId : null
+                };
+                
+                // Add to comments array
+                allComments.push(newComment);
+                
+                // Save to API
+                const success = await commentsApi.updateComments({ comments: allComments });
+                
+                if (success) {
+                    commentInput.value = '';
+                    updateCharCount();
+                    cancelReply();
+                    
+                    // Reload comments to show the new one
+                    await loadComments();
+                    
+                    const actionText = replyingTo ? 'Balasan berhasil dikirim!' : 'Komentar berhasil dikirim!';
+                    showToast(actionText, 'success');
+                } else {
+                    // Remove from local array if API call failed
+                    allComments.pop();
+                    showToast('Gagal mengirim komentar', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                showToast('Terjadi kesalahan saat mengirim komentar', 'error');
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>💬</span><span>Kirim</span>';
+            }
+        }
+
+        async function likeComment(commentId) {
+            if (!currentUser) {
+                showToast('Anda harus login untuk menyukai komentar', 'error');
+                return;
+            }
+            
+            try {
+                const comment = allComments.find(c => c.id === commentId);
+                if (!comment) return;
+                
+                // Simple like system (can be enhanced to prevent multiple likes per user)
+                comment.likes = (comment.likes || 0) + 1;
+                
+                const success = await commentsApi.updateComments({ comments: allComments });
+                
+                if (success) {
+                    await loadComments(); // Reload to show updated likes
+                    showToast('Komentar disukai!', 'success');
+                } else {
+                    comment.likes = (comment.likes || 1) - 1; // Revert on error
+                    showToast('Gagal menyukai komentar', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error liking comment:', error);
+                showToast('Terjadi kesalahan', 'error');
+            }
+        }
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function formatTime(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diff = Math.floor((now - time) / 1000);
+            
+            if (diff < 60) return 'Baru saja';
+            if (diff < 3600) return `${Math.floor(diff / 60)} menit yang lalu`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} jam yang lalu`;
+            if (diff < 2592000) return `${Math.floor(diff / 86400)} hari yang lalu`;
+            
+            return time.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateCharCount() {
+            const commentInput = document.getElementById('commentInput');
+            const charCount = document.getElementById('charCount');
+            const currentLength = commentInput.value.length;
+            
+            charCount.textContent = `${currentLength}/500`;
+            
+            if (currentLength > 450) {
+                charCount.className = 'char-count error';
+            } else if (currentLength > 400) {
+                charCount.className = 'char-count warning';
+            } else {
+                charCount.className = 'char-count';
+            }
+        }
+
+        // UI Functions
+        function toggleFullscreen() {
+            const videoContainer = document.getElementById('videoContainer');
+            
+            if (!document.fullscreenElement) {
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen().catch(err => {
+                        showToast('Gagal masuk mode fullscreen', 'error');
+                    });
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.msRequestFullscreen) {
+                    videoContainer.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(err => {
+                        showToast('Gagal keluar dari fullscreen', 'error');
+                    });
+                }
+            }
+        }
+
+        // Authentication Check
+        function checkAuthentication() {
+            const user = SessionManager.getSession();
+            if (!user) {
+                showToast('Anda harus login untuk menonton', 'error');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return false;
+            }
+            
+            currentUser = user;
+            document.getElementById('userAvatar').src = user.picture;
+            document.getElementById('userName').textContent = user.name;
+            return true;
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Comment input character count
+            const commentInput = document.getElementById('commentInput');
+            commentInput.addEventListener('input', updateCharCount);
+            
+            // Submit comment on Ctrl+Enter
+            commentInput.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    submitComment();
+                }
+            });
+            
+            // Fullscreen change listener
+            document.addEventListener('fullscreenchange', function() {
+                const fullscreenBtn = document.querySelector('.control-btn[onclick="toggleFullscreen()"]');
+                if (fullscreenBtn) {
+                    if (document.fullscreenElement) {
+                        fullscreenBtn.innerHTML = '❌';
+                        fullscreenBtn.title = 'Exit Fullscreen';
+                    } else {
+                        fullscreenBtn.innerHTML = '⛶';
+                        fullscreenBtn.title = 'Fullscreen';
+                    }
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Only work when not typing in input fields
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        previousEpisode();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        nextEpisode();
+                        break;
+                    case 'f':
+                    case 'F':
+                        e.preventDefault();
+                        toggleFullscreen();
+                        break;
+                    case 'Escape':
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        }
+                        break;
+                }
+            });
+        }
+
+        // Initialize Application
+        async function initializeApp() {
+            try {
+                // Check authentication first
+                if (!checkAuthentication()) {
+                    return;
+                }
+                
+                // Load anime data
+                await loadAnime();
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Show main content
+                document.getElementById('mainContainer').style.display = 'grid';
+                
+                showToast('Video berhasil dimuat!', 'success');
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showToast('Gagal memuat halaman', 'error');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
+            } finally {
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                    }, 600);
+                }, 1000);
+            }
+        }
+
+        // Error Handling
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e.error);
+            showToast('Terjadi kesalahan aplikasi', 'error');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('Unhandled promise rejection:', e.reason);
+            showToast('Terjadi kesalahan jaringan', 'error');
+            e.preventDefault();
+        });
+
+        // Connection monitoring
+        window.addEventListener('online', () => {
+            showToast('Koneksi internet tersambung kembali', 'success');
+        });
+        
+        window.addEventListener('offline', () => {
+            showToast('Koneksi internet terputus', 'error');
+        });
+
+        // Auto-play next episode (optional feature)
+        function setupAutoPlay() {
+            const iframe = document.querySelector('#videoContainer iframe');
+            if (iframe && iframe.src.includes('youtube.com')) {
+                // Listen for video end (YouTube API would be needed for this)
+                // For now, we'll use a simple timeout as an example
+                setTimeout(() => {
+                    if (currentEpisodeIndex < (currentAnime.episodes?.length || 0) - 1) {
+                        if (confirm('Episode selesai. Lanjut ke episode berikutnya?')) {
+                            nextEpisode();
+                        }
+                    }
+                }, 30000); // Example: 30 seconds for demo
+            }
+        }
+
+        // Start application
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        // Expose functions globally
+        window.switchEpisode = switchEpisode;
+        window.previousEpisode = previousEpisode;
+        window.nextEpisode = nextEpisode;
+        window.submitComment = submitComment;
+        window.likeComment = likeComment;
+        window.replyToComment = replyToComment;
+        window.cancelReply = cancelReply;
+        window.toggleFullscreen = toggleFullscreen;
+    </script>
+</body>
+</html>
